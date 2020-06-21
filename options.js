@@ -110,7 +110,17 @@ function translateXML(xmlnode){
 	{
 		 noWebTrans = true;
 	}
-	
+
+	if ((!noBaseTrans || !noWebTrans ) && document.getElementById("autoaddword").checked == true) {
+		//这样写,能保证成功就是成功,数据一致,但有dom操作
+		//也可以,直接拼好带成功提示的弹窗的自符串,直接显示.
+		chrome.runtime.sendMessage({
+			action: "addword",
+			data: document.getElementsByName("word")[0].value
+		}, function (response) {
+			//
+		});
+	}	
 	
 	if (noBaseTrans == false) {
 		translate += retphrase + "<br/><br/><strong>基本释义:</strong><br/>";
@@ -335,8 +345,17 @@ function restore_options()
     
 }
 
-document.body.onload =  function () { restore_options();document.getElementById('word').focus();changeIcon(); };
-document.getElementById("dict_disable").onclick = function () {save_options();};
+document.body.onload =  function () { 
+	restore_options();
+	document.getElementById('word').focus();
+	changeIcon(); 
+};
+document.getElementById("dict_disable").onclick = function () {
+	if(document.getElementById("dict_disable").checked == true) {
+		document.getElementById("ctrl_only").checked = false;
+	} 
+	save_options();
+};
 document.getElementById("ctrl_only").onclick = function () { save_options();};
 document.getElementById("english_only").onclick= function () { save_options();};
 document.getElementById("autoplay").onclick= function () { save_options();};
